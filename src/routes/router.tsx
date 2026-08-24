@@ -7,6 +7,9 @@ import { SignupPage } from '@/routes/public/SignupPage'
 import { ClientLayout } from '@/routes/client/ClientLayout'
 import { AdminLayout } from '@/routes/admin/AdminLayout'
 import { SuperAdminLayout } from '@/routes/super-admin/SuperAdminLayout'
+import { ComplexesPage } from '@/routes/super-admin/ComplexesPage'
+import { NewComplexPage } from '@/routes/super-admin/NewComplexPage'
+import { ComplexDetailPage } from '@/routes/super-admin/ComplexDetailPage'
 
 export const router = createBrowserRouter([
   { path: '/', element: <HomePage /> },
@@ -60,9 +63,9 @@ export const router = createBrowserRouter([
         element: <SuperAdminLayout />,
         children: [
           { index: true, element: <StubPage title="Estadísticas" /> },
-          { path: 'complexes', element: <StubPage title="Complejos" /> },
-          { path: 'complexes/:id', element: <StubPage title="Detalle de complejo" /> },
-          { path: 'complexes/:id/admins', element: <StubPage title="Admins del complejo" /> },
+          { path: 'complexes', element: <ComplexesPage /> },
+          { path: 'complexes/new', element: <NewComplexPage /> },
+          { path: 'complexes/:id', element: <ComplexDetailPage /> },
           { path: 'users', element: <StubPage title="Usuarios" /> },
         ],
       },

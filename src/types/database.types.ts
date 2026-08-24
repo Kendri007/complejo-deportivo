@@ -34,6 +34,7 @@ export type Database = {
           updated_at?: string
         }
         Update: Partial<Database['public']['Tables']['profiles']['Insert']>
+        Relationships: []
       }
       complexes: {
         Row: {
@@ -65,6 +66,7 @@ export type Database = {
           updated_at?: string
         }
         Update: Partial<Database['public']['Tables']['complexes']['Insert']>
+        Relationships: []
       }
       complex_admins: {
         Row: {
@@ -80,6 +82,15 @@ export type Database = {
           created_at?: string
         }
         Update: Partial<Database['public']['Tables']['complex_admins']['Insert']>
+        Relationships: [
+          {
+            foreignKeyName: 'complex_admins_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
       }
       sports: {
         Row: {
@@ -95,6 +106,7 @@ export type Database = {
           icon?: string | null
         }
         Update: Partial<Database['public']['Tables']['sports']['Insert']>
+        Relationships: []
       }
       courts: {
         Row: {
@@ -126,6 +138,7 @@ export type Database = {
           updated_at?: string
         }
         Update: Partial<Database['public']['Tables']['courts']['Insert']>
+        Relationships: []
       }
       operating_hours: {
         Row: {
@@ -143,6 +156,7 @@ export type Database = {
           close_time: string
         }
         Update: Partial<Database['public']['Tables']['operating_hours']['Insert']>
+        Relationships: []
       }
       blackout_dates: {
         Row: {
@@ -168,6 +182,7 @@ export type Database = {
           created_at?: string
         }
         Update: Partial<Database['public']['Tables']['blackout_dates']['Insert']>
+        Relationships: []
       }
       reservations: {
         Row: {
@@ -197,6 +212,7 @@ export type Database = {
           updated_at?: string
         }
         Update: Partial<Database['public']['Tables']['reservations']['Insert']>
+        Relationships: []
       }
       matches: {
         Row: {
@@ -216,6 +232,7 @@ export type Database = {
           created_at?: string
         }
         Update: Partial<Database['public']['Tables']['matches']['Insert']>
+        Relationships: []
       }
       match_participants: {
         Row: {
@@ -233,6 +250,7 @@ export type Database = {
           joined_at?: string
         }
         Update: Partial<Database['public']['Tables']['match_participants']['Insert']>
+        Relationships: []
       }
     }
     Views: {
@@ -242,6 +260,7 @@ export type Database = {
           full_name: string | null
           avatar_url: string | null
         }
+        Relationships: []
       }
     }
     Functions: {
@@ -282,6 +301,10 @@ export type Database = {
       leave_match: {
         Args: { target_match_id: string }
         Returns: undefined
+      }
+      find_user_id_by_email: {
+        Args: { target_email: string }
+        Returns: string | null
       }
     }
     Enums: Record<string, never>
