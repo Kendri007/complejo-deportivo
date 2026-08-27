@@ -12,16 +12,19 @@ import { BookCourtPage } from '@/routes/client/BookCourtPage'
 import { MatchesPage } from '@/routes/client/MatchesPage'
 import { MatchDetailPage } from '@/routes/client/MatchDetailPage'
 import { MyReservationsPage } from '@/routes/client/MyReservationsPage'
+import { ProfilePage } from '@/routes/client/ProfilePage'
 import { AdminLayout } from '@/routes/admin/AdminLayout'
 import { AdminHomePage } from '@/routes/admin/AdminHomePage'
 import { CourtsPage } from '@/routes/admin/CourtsPage'
 import { SchedulePage } from '@/routes/admin/SchedulePage'
 import { ReservationsPage } from '@/routes/admin/ReservationsPage'
+import { SettingsPage } from '@/routes/admin/SettingsPage'
 import { SuperAdminLayout } from '@/routes/super-admin/SuperAdminLayout'
 import { ComplexesPage } from '@/routes/super-admin/ComplexesPage'
 import { NewComplexPage } from '@/routes/super-admin/NewComplexPage'
 import { ComplexDetailPage } from '@/routes/super-admin/ComplexDetailPage'
 import { DashboardPage } from '@/routes/super-admin/DashboardPage'
+import { UsersPage } from '@/routes/super-admin/UsersPage'
 
 export const router = createBrowserRouter([
   { path: '/', element: <HomePage /> },
@@ -45,7 +48,7 @@ export const router = createBrowserRouter([
           { path: 'matches', element: <MatchesPage /> },
           { path: 'matches/:matchId', element: <MatchDetailPage /> },
           { path: 'my-reservations', element: <MyReservationsPage /> },
-          { path: 'profile', element: <StubPage title="Mi perfil" /> },
+          { path: 'profile', element: <ProfilePage /> },
         ],
       },
     ],
@@ -62,7 +65,7 @@ export const router = createBrowserRouter([
           { path: ':complexId/courts', element: <CourtsPage /> },
           { path: ':complexId/schedule', element: <SchedulePage /> },
           { path: ':complexId/reservations', element: <ReservationsPage /> },
-          { path: ':complexId/settings', element: <StubPage title="Configuración" /> },
+          { path: ':complexId/settings', element: <SettingsPage /> },
         ],
       },
     ],
@@ -79,7 +82,7 @@ export const router = createBrowserRouter([
           { path: 'complexes', element: <ComplexesPage /> },
           { path: 'complexes/new', element: <NewComplexPage /> },
           { path: 'complexes/:id', element: <ComplexDetailPage /> },
-          { path: 'users', element: <StubPage title="Usuarios" /> },
+          { path: 'users', element: <UsersPage /> },
         ],
       },
     ],
