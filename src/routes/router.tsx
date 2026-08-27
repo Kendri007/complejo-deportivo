@@ -4,8 +4,13 @@ import { StubPage } from '@/routes/StubPage'
 import { HomePage } from '@/routes/public/HomePage'
 import { LoginPage } from '@/routes/public/LoginPage'
 import { SignupPage } from '@/routes/public/SignupPage'
+import { RegisterComplexPage } from '@/routes/public/RegisterComplexPage'
 import { ClientLayout } from '@/routes/client/ClientLayout'
 import { AdminLayout } from '@/routes/admin/AdminLayout'
+import { AdminHomePage } from '@/routes/admin/AdminHomePage'
+import { CourtsPage } from '@/routes/admin/CourtsPage'
+import { SchedulePage } from '@/routes/admin/SchedulePage'
+import { ReservationsPage } from '@/routes/admin/ReservationsPage'
 import { SuperAdminLayout } from '@/routes/super-admin/SuperAdminLayout'
 import { ComplexesPage } from '@/routes/super-admin/ComplexesPage'
 import { NewComplexPage } from '@/routes/super-admin/NewComplexPage'
@@ -15,6 +20,7 @@ export const router = createBrowserRouter([
   { path: '/', element: <HomePage /> },
   { path: '/login', element: <LoginPage /> },
   { path: '/signup', element: <SignupPage /> },
+  { path: '/register-complex', element: <RegisterComplexPage /> },
 
   {
     path: '/app',
@@ -45,10 +51,10 @@ export const router = createBrowserRouter([
       {
         element: <AdminLayout />,
         children: [
-          { index: true, element: <StubPage title="Mis complejos" /> },
-          { path: ':complexId/courts', element: <StubPage title="Canchas" /> },
-          { path: ':complexId/schedule', element: <StubPage title="Horarios" /> },
-          { path: ':complexId/reservations', element: <StubPage title="Reservas del complejo" /> },
+          { index: true, element: <AdminHomePage /> },
+          { path: ':complexId/courts', element: <CourtsPage /> },
+          { path: ':complexId/schedule', element: <SchedulePage /> },
+          { path: ':complexId/reservations', element: <ReservationsPage /> },
           { path: ':complexId/settings', element: <StubPage title="Configuración" /> },
         ],
       },

@@ -10,6 +10,33 @@ export async function listComplexes() {
   return data
 }
 
+export async function registerComplex(input: {
+  name: string
+  address?: string | null
+  lat?: number | null
+  lng?: number | null
+  phone?: string | null
+}) {
+  const { data, error } = await supabase.rpc('register_complex', {
+    complex_name: input.name,
+    complex_address: input.address,
+    complex_lat: input.lat,
+    complex_lng: input.lng,
+    complex_phone: input.phone,
+  })
+  if (error) throw error
+  return data
+}
+
+export async function listMyManagedComplexes() {
+  const { data, error } = await supabase
+    .from('complex_admins')
+    .select('complexes(*)')
+    .order('created_at', { ascending: false })
+  if (error) throw error
+  return data.map((row) => row.complexes).filter((c): c is NonNullable<typeof c> => c !== null)
+}
+
 export async function getComplex(id: string) {
   const { data, error } = await supabase.from('complexes').select('*').eq('id', id).single()
   if (error) throw error

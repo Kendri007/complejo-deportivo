@@ -18,9 +18,19 @@ type AuthContextValue = {
   profile: Profile | null
   role: Role | null
   loading: boolean
+  refreshProfile: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
+
+async function fetchProfile(userId: string) {
+  const { data } = await supabase
+    .from('profiles')
+    .select('id, full_name, avatar_url, phone, role')
+    .eq('id', userId)
+    .single()
+  return (data as Profile | null) ?? null
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
@@ -30,20 +40,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let active = true
 
-    async function loadProfile(userId: string) {
-      const { data } = await supabase
-        .from('profiles')
-        .select('id, full_name, avatar_url, phone, role')
-        .eq('id', userId)
-        .single()
-      if (active) setProfile((data as Profile | null) ?? null)
-    }
-
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!active) return
       setSession(session)
       if (session?.user) {
-        loadProfile(session.user.id).finally(() => active && setLoading(false))
+        fetchProfile(session.user.id).then((p) => active && setProfile(p)).finally(() => active && setLoading(false))
       } else {
         setLoading(false)
       }
@@ -53,7 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!active) return
       setSession(session)
       if (session?.user) {
-        loadProfile(session.user.id)
+        fetchProfile(session.user.id).then((p) => active && setProfile(p))
       } else {
         setProfile(null)
       }
@@ -65,12 +66,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
+  async function refreshProfile() {
+    const {
+      data: { session: freshSession },
+    } = await supabase.auth.getSession()
+    setSession(freshSession)
+    if (!freshSession?.user) return
+    const p = await fetchProfile(freshSession.user.id)
+    setProfile(p)
+  }
+
   const value: AuthContextValue = {
     session,
     user: session?.user ?? null,
     profile,
     role: profile?.role ?? null,
     loading,
+    refreshProfile,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

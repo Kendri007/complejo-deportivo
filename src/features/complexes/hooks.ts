@@ -6,6 +6,8 @@ import {
   getComplex,
   listComplexAdmins,
   listComplexes,
+  listMyManagedComplexes,
+  registerComplex,
   removeComplexAdmin,
   updateComplex,
 } from '@/features/complexes/api'
@@ -13,6 +15,16 @@ import type { ComplexInsert, ComplexUpdate } from '@/features/complexes/types'
 
 export function useComplexes() {
   return useQuery({ queryKey: ['complexes'], queryFn: listComplexes })
+}
+
+export function useRegisterComplex() {
+  return useMutation({
+    mutationFn: (input: Parameters<typeof registerComplex>[0]) => registerComplex(input),
+  })
+}
+
+export function useMyManagedComplexes() {
+  return useQuery({ queryKey: ['complex-admins', 'mine'], queryFn: listMyManagedComplexes })
 }
 
 export function useComplex(id: string | undefined) {

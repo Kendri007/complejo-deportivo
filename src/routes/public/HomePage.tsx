@@ -26,6 +26,12 @@ export function HomePage() {
         <Button asChild variant="secondary" size="lg" className="w-full">
           <Link to="/login">Ya tengo cuenta</Link>
         </Button>
+        <Link
+          to="/register-complex"
+          className="text-center text-sm text-muted-foreground underline underline-offset-4"
+        >
+          ¿Sos dueño de un complejo? Registralo acá
+        </Link>
       </footer>
     </div>
   )

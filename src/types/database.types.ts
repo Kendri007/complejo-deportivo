@@ -90,6 +90,13 @@ export type Database = {
             referencedRelation: 'profiles'
             referencedColumns: ['id']
           },
+          {
+            foreignKeyName: 'complex_admins_complex_id_fkey'
+            columns: ['complex_id']
+            isOneToOne: false
+            referencedRelation: 'complexes'
+            referencedColumns: ['id']
+          },
         ]
       }
       sports: {
@@ -138,7 +145,22 @@ export type Database = {
           updated_at?: string
         }
         Update: Partial<Database['public']['Tables']['courts']['Insert']>
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'courts_complex_id_fkey'
+            columns: ['complex_id']
+            isOneToOne: false
+            referencedRelation: 'complexes'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'courts_sport_id_fkey'
+            columns: ['sport_id']
+            isOneToOne: false
+            referencedRelation: 'sports'
+            referencedColumns: ['id']
+          },
+        ]
       }
       operating_hours: {
         Row: {
@@ -212,7 +234,15 @@ export type Database = {
           updated_at?: string
         }
         Update: Partial<Database['public']['Tables']['reservations']['Insert']>
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: 'reservations_court_id_fkey'
+            columns: ['court_id']
+            isOneToOne: false
+            referencedRelation: 'courts'
+            referencedColumns: ['id']
+          },
+        ]
       }
       matches: {
         Row: {
@@ -305,6 +335,16 @@ export type Database = {
       find_user_id_by_email: {
         Args: { target_email: string }
         Returns: string | null
+      }
+      register_complex: {
+        Args: {
+          complex_name: string
+          complex_address?: string | null
+          complex_lat?: number | null
+          complex_lng?: number | null
+          complex_phone?: string | null
+        }
+        Returns: string
       }
     }
     Enums: Record<string, never>
