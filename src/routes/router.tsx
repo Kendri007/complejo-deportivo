@@ -15,6 +15,7 @@ import { SuperAdminLayout } from '@/routes/super-admin/SuperAdminLayout'
 import { ComplexesPage } from '@/routes/super-admin/ComplexesPage'
 import { NewComplexPage } from '@/routes/super-admin/NewComplexPage'
 import { ComplexDetailPage } from '@/routes/super-admin/ComplexDetailPage'
+import { DashboardPage } from '@/routes/super-admin/DashboardPage'
 
 export const router = createBrowserRouter([
   { path: '/', element: <HomePage /> },
@@ -68,7 +69,7 @@ export const router = createBrowserRouter([
       {
         element: <SuperAdminLayout />,
         children: [
-          { index: true, element: <StubPage title="Estadísticas" /> },
+          { index: true, element: <DashboardPage /> },
           { path: 'complexes', element: <ComplexesPage /> },
           { path: 'complexes/new', element: <NewComplexPage /> },
           { path: 'complexes/:id', element: <ComplexDetailPage /> },

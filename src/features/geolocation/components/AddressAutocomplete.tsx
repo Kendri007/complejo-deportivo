@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { isGoogleMapsConfigured, loadPlacesLibrary } from '@/lib/googleMaps'
+import { searchAddress, type GeocodeSuggestion } from '@/lib/geocoding'
 
-export type PlaceSelection = { address: string; lat: number; lng: number }
+export type PlaceSelection = GeocodeSuggestion
 
 export function AddressAutocomplete({
   id,
@@ -18,61 +18,67 @@ export function AddressAutocomplete({
   onChange: (address: string) => void
   onPlaceSelected: (place: PlaceSelection) => void
 }) {
-  const inputRef = useRef<HTMLInputElement>(null)
-  const [ready, setReady] = useState(false)
-  const configured = isGoogleMapsConfigured()
+  const [suggestions, setSuggestions] = useState<GeocodeSuggestion[]>([])
+  const [loading, setLoading] = useState(false)
+  const [open, setOpen] = useState(false)
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
-    if (!configured || !inputRef.current) return
-    let autocomplete: google.maps.places.Autocomplete | undefined
-    let listener: google.maps.MapsEventListener | undefined
+    if (debounceRef.current) clearTimeout(debounceRef.current)
 
-    loadPlacesLibrary()
-      .then((places) => {
-        if (!inputRef.current) return
-        autocomplete = new places.Autocomplete(inputRef.current, {
-          fields: ['formatted_address', 'geometry'],
+    if (value.trim().length < 3) {
+      setSuggestions([])
+      return
+    }
+
+    debounceRef.current = setTimeout(() => {
+      setLoading(true)
+      searchAddress(value)
+        .then((results) => {
+          setSuggestions(results)
+          setOpen(true)
         })
-        listener = autocomplete.addListener('place_changed', () => {
-          const place = autocomplete!.getPlace()
-          const location = place.geometry?.location
-          if (!location) return
-          onChange(place.formatted_address ?? inputRef.current!.value)
-          onPlaceSelected({
-            address: place.formatted_address ?? inputRef.current!.value,
-            lat: location.lat(),
-            lng: location.lng(),
-          })
-        })
-        setReady(true)
-      })
-      .catch(() => setReady(false))
+        .catch(() => setSuggestions([]))
+        .finally(() => setLoading(false))
+    }, 500)
 
     return () => {
-      listener?.remove()
+      if (debounceRef.current) clearTimeout(debounceRef.current)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [configured])
+  }, [value])
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="relative flex flex-col gap-2">
       <Label htmlFor={id}>{label}</Label>
       <Input
         id={id}
-        ref={inputRef}
         autoComplete="off"
-        placeholder={configured ? 'Empezá a escribir la dirección...' : 'Dirección'}
+        placeholder="Empezá a escribir la dirección..."
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        onFocus={() => suggestions.length > 0 && setOpen(true)}
+        onBlur={() => setTimeout(() => setOpen(false), 150)}
       />
-      {!configured && (
-        <p className="text-xs text-muted-foreground">
-          Autocompletado no disponible (falta configurar Google Maps). La dirección se guarda
-          como texto libre, sin coordenadas.
-        </p>
-      )}
-      {configured && !ready && (
-        <p className="text-xs text-muted-foreground">Cargando autocompletado...</p>
+      {loading && <p className="text-xs text-muted-foreground">Buscando...</p>}
+      {open && suggestions.length > 0 && (
+        <ul className="absolute top-full z-10 mt-1 w-full overflow-hidden rounded-lg border border-border bg-popover shadow-lg">
+          {suggestions.map((s) => (
+            <li key={`${s.lat}-${s.lng}`}>
+              <button
+                type="button"
+                className="block w-full px-3 py-2 text-left text-sm hover:bg-muted"
+                onMouseDown={(e) => {
+                  e.preventDefault()
+                  onChange(s.address)
+                  onPlaceSelected(s)
+                  setOpen(false)
+                }}
+              >
+                {s.address}
+              </button>
+            </li>
+          ))}
+        </ul>
       )}
     </div>
   )

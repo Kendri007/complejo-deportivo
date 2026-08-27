@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { ComplexForm } from '@/features/complexes/components/ComplexForm'
 import { ComplexAdminsPanel } from '@/features/complexes/components/ComplexAdminsPanel'
 import { useComplex, useDeleteComplex, useUpdateComplex } from '@/features/complexes/hooks'
+import { SubscriptionPanel } from '@/features/subscriptions/components/SubscriptionPanel'
 import { StubPage } from '@/routes/StubPage'
 
 export function ComplexDetailPage() {
@@ -41,6 +42,11 @@ export function ComplexDetailPage() {
       </div>
 
       <ComplexAdminsPanel complexId={id} />
+
+      <SubscriptionPanel
+        complexId={id}
+        subscriptionExpiresAt={complex.subscription_expires_at}
+      />
 
       <Button
         type="button"

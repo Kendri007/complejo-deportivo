@@ -48,6 +48,7 @@ export type Database = {
           cover_image_url: string | null
           is_active: boolean
           created_by: string | null
+          subscription_expires_at: string | null
           created_at: string
           updated_at: string
         }
@@ -62,6 +63,7 @@ export type Database = {
           cover_image_url?: string | null
           is_active?: boolean
           created_by?: string | null
+          subscription_expires_at?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -282,6 +284,50 @@ export type Database = {
         Update: Partial<Database['public']['Tables']['match_participants']['Insert']>
         Relationships: []
       }
+      platform_settings: {
+        Row: {
+          id: boolean
+          monthly_price: number
+        }
+        Insert: {
+          id?: boolean
+          monthly_price?: number
+        }
+        Update: Partial<Database['public']['Tables']['platform_settings']['Insert']>
+        Relationships: []
+      }
+      subscription_payments: {
+        Row: {
+          id: string
+          complex_id: string
+          amount: number
+          months: number
+          period_start: string
+          period_end: string
+          recorded_by: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          complex_id: string
+          amount: number
+          months?: number
+          period_start: string
+          period_end: string
+          recorded_by?: string | null
+          created_at?: string
+        }
+        Update: Partial<Database['public']['Tables']['subscription_payments']['Insert']>
+        Relationships: [
+          {
+            foreignKeyName: 'subscription_payments_complex_id_fkey'
+            columns: ['complex_id']
+            isOneToOne: false
+            referencedRelation: 'complexes'
+            referencedColumns: ['id']
+          },
+        ]
+      }
     }
     Views: {
       public_profiles: {
@@ -335,6 +381,10 @@ export type Database = {
       find_user_id_by_email: {
         Args: { target_email: string }
         Returns: string | null
+      }
+      record_subscription_payment: {
+        Args: { target_complex_id: string; amount: number; months?: number }
+        Returns: string
       }
       register_complex: {
         Args: {
