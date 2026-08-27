@@ -382,6 +382,42 @@ export type Database = {
         Args: { target_email: string }
         Returns: string | null
       }
+      list_open_matches: {
+        Args: { filter_sport_key?: string | null; max_results?: number }
+        Returns: {
+          match_id: string
+          target_players: number
+          status: MatchStatus
+          date: string
+          start_time: string
+          end_time: string
+          court_id: string
+          court_name: string
+          complex_id: string
+          complex_name: string
+          sport_key: string
+          sport_label: string
+          joined_count: number
+        }[]
+      }
+      get_match_details: {
+        Args: { target_match_id: string }
+        Returns: {
+          match_id: string
+          target_players: number
+          status: MatchStatus
+          created_by: string
+          date: string
+          start_time: string
+          end_time: string
+          court_id: string
+          court_name: string
+          complex_id: string
+          complex_name: string
+          sport_label: string
+          joined_count: number
+        }[]
+      }
       record_subscription_payment: {
         Args: { target_complex_id: string; amount: number; months?: number }
         Returns: string

@@ -6,6 +6,12 @@ import { LoginPage } from '@/routes/public/LoginPage'
 import { SignupPage } from '@/routes/public/SignupPage'
 import { RegisterComplexPage } from '@/routes/public/RegisterComplexPage'
 import { ClientLayout } from '@/routes/client/ClientLayout'
+import { NearbyComplexesPage } from '@/routes/client/NearbyComplexesPage'
+import { ComplexDetailPage as ClientComplexDetailPage } from '@/routes/client/ComplexDetailPage'
+import { BookCourtPage } from '@/routes/client/BookCourtPage'
+import { MatchesPage } from '@/routes/client/MatchesPage'
+import { MatchDetailPage } from '@/routes/client/MatchDetailPage'
+import { MyReservationsPage } from '@/routes/client/MyReservationsPage'
 import { AdminLayout } from '@/routes/admin/AdminLayout'
 import { AdminHomePage } from '@/routes/admin/AdminHomePage'
 import { CourtsPage } from '@/routes/admin/CourtsPage'
@@ -30,15 +36,15 @@ export const router = createBrowserRouter([
       {
         element: <ClientLayout />,
         children: [
-          { index: true, element: <StubPage title="Complejos cerca tuyo" /> },
-          { path: 'complexes/:complexId', element: <StubPage title="Detalle de complejo" /> },
+          { index: true, element: <NearbyComplexesPage /> },
+          { path: 'complexes/:complexId', element: <ClientComplexDetailPage /> },
           {
             path: 'complexes/:complexId/courts/:courtId/book',
-            element: <StubPage title="Reservar cancha" />,
+            element: <BookCourtPage />,
           },
-          { path: 'matches', element: <StubPage title="Partidos abiertos" /> },
-          { path: 'matches/:matchId', element: <StubPage title="Detalle de partido" /> },
-          { path: 'my-reservations', element: <StubPage title="Mis reservas" /> },
+          { path: 'matches', element: <MatchesPage /> },
+          { path: 'matches/:matchId', element: <MatchDetailPage /> },
+          { path: 'my-reservations', element: <MyReservationsPage /> },
           { path: 'profile', element: <StubPage title="Mi perfil" /> },
         ],
       },

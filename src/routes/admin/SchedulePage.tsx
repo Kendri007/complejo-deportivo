@@ -2,14 +2,12 @@ import { useEffect } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
 import { OperatingHoursEditor } from '@/features/schedule/components/OperatingHoursEditor'
 import { BlackoutDatesPanel } from '@/features/schedule/components/BlackoutDatesPanel'
-import { useCourts } from '@/features/courts/hooks'
-import { useSportByKey } from '@/features/sports/hooks'
+import { useAllCourts } from '@/features/courts/hooks'
 
 export function SchedulePage() {
   const { complexId } = useParams<{ complexId: string }>()
   const [searchParams, setSearchParams] = useSearchParams()
-  const { data: padel } = useSportByKey('padel')
-  const { data: courts, isLoading } = useCourts(complexId, padel?.id)
+  const { data: courts, isLoading } = useAllCourts(complexId)
 
   const courtId = searchParams.get('courtId') ?? courts?.[0]?.id
 
@@ -28,7 +26,7 @@ export function SchedulePage() {
   if (!courts || courts.length === 0) {
     return (
       <p className="p-4 text-sm text-muted-foreground">
-        Primero cargá una cancha de pádel para poder configurar sus horarios.
+        Primero cargá una cancha para poder configurar sus horarios.
       </p>
     )
   }
@@ -49,7 +47,7 @@ export function SchedulePage() {
                   : 'border-border bg-card text-foreground'
               }`}
             >
-              {court.name}
+              {court.name} · {court.sports?.label}
             </button>
           ))}
         </div>

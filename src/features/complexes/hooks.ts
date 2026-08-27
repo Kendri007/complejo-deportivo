@@ -7,6 +7,7 @@ import {
   listComplexAdmins,
   listComplexes,
   listMyManagedComplexes,
+  nearbyComplexes,
   registerComplex,
   removeComplexAdmin,
   updateComplex,
@@ -15,6 +16,14 @@ import type { ComplexInsert, ComplexUpdate } from '@/features/complexes/types'
 
 export function useComplexes() {
   return useQuery({ queryKey: ['complexes'], queryFn: listComplexes })
+}
+
+export function useNearbyComplexes(coords: { lat: number; lng: number } | null) {
+  return useQuery({
+    queryKey: ['nearby-complexes', coords?.lat, coords?.lng],
+    queryFn: () => nearbyComplexes(coords!.lat, coords!.lng),
+    enabled: !!coords,
+  })
 }
 
 export function useRegisterComplex() {

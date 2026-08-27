@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
+import { BottomTabBar } from '@/components/shared/BottomTabBar'
 import { signOut } from '@/features/auth/api'
 
 export function ClientLayout() {
@@ -11,9 +12,10 @@ export function ClientLayout() {
           Salir
         </Button>
       </header>
-      <main className="flex-1">
+      <main className="flex-1 pb-4">
         <Outlet />
       </main>
+      <BottomTabBar />
     </div>
   )
 }

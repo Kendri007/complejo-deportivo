@@ -28,6 +28,16 @@ export async function registerComplex(input: {
   return data
 }
 
+export async function nearbyComplexes(lat: number, lng: number, radiusKm = 25) {
+  const { data, error } = await supabase.rpc('nearby_complexes', {
+    user_lat: lat,
+    user_lng: lng,
+    radius_km: radiusKm,
+  })
+  if (error) throw error
+  return data
+}
+
 export async function listMyManagedComplexes() {
   const { data, error } = await supabase
     .from('complex_admins')

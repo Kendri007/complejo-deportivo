@@ -24,9 +24,57 @@ export async function listComplexReservations(complexId: string) {
   return reservations.map((r) => ({ ...r, client_name: namesById[r.user_id] ?? null }))
 }
 
-export async function cancelReservationAsAdmin(reservationId: string) {
+export async function listMyReservations() {
+  const { data, error } = await supabase
+    .from('reservations')
+    .select('*, courts(name, complexes(name), sports(label))')
+    .eq('status', 'confirmed')
+    .order('date', { ascending: true })
+    .order('start_time', { ascending: true })
+  if (error) throw error
+  return data
+}
+
+export async function getAvailableSlots(courtId: string, date: string) {
+  const { data, error } = await supabase.rpc('get_available_slots', {
+    target_court_id: courtId,
+    target_date: date,
+  })
+  if (error) throw error
+  return data.map((row) => row.start_time)
+}
+
+export async function createReservation(input: {
+  courtId: string
+  date: string
+  startTime: string
+  type: 'private' | 'match'
+  matchTargetPlayers?: number
+}) {
+  const { data, error } = await supabase.rpc('create_reservation', {
+    target_court_id: input.courtId,
+    target_date: input.date,
+    target_start_time: input.startTime,
+    reservation_type: input.type,
+    match_target_players: input.matchTargetPlayers ?? null,
+  })
+  if (error) throw error
+  return data
+}
+
+export async function cancelReservation(reservationId: string) {
   const { error } = await supabase.rpc('cancel_reservation', {
     target_reservation_id: reservationId,
   })
   if (error) throw error
+}
+
+export async function getMatchIdForReservation(reservationId: string) {
+  const { data, error } = await supabase
+    .from('matches')
+    .select('id')
+    .eq('reservation_id', reservationId)
+    .single()
+  if (error) throw error
+  return data.id
 }

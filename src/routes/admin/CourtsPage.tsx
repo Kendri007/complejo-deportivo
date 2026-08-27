@@ -1,17 +1,23 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { CourtForm, type CourtFormValues } from '@/features/courts/components/CourtForm'
 import { useCourts, useCreateCourt, useDeleteCourt, useUpdateCourt } from '@/features/courts/hooks'
-import { useSportByKey } from '@/features/sports/hooks'
+import { useSports } from '@/features/sports/hooks'
 
 export function CourtsPage() {
   const { complexId } = useParams<{ complexId: string }>()
-  const { data: padel } = useSportByKey('padel')
-  const { data: courts, isLoading } = useCourts(complexId, padel?.id)
-  const createCourt = useCreateCourt(complexId ?? '', padel?.id ?? '')
-  const updateCourt = useUpdateCourt(complexId ?? '', padel?.id ?? '')
-  const deleteCourt = useDeleteCourt(complexId ?? '', padel?.id ?? '')
+  const { data: sports } = useSports()
+  const [sportId, setSportId] = useState<string | undefined>(undefined)
+
+  useEffect(() => {
+    if (!sportId && sports && sports.length > 0) setSportId(sports[0].id)
+  }, [sports, sportId])
+
+  const { data: courts, isLoading } = useCourts(complexId, sportId)
+  const createCourt = useCreateCourt(complexId ?? '')
+  const updateCourt = useUpdateCourt(complexId ?? '')
+  const deleteCourt = useDeleteCourt(complexId ?? '')
 
   const [showNewForm, setShowNewForm] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -21,8 +27,33 @@ export function CourtsPage() {
 
   return (
     <div className="flex flex-col gap-4 p-4">
+      <h1 className="text-xl font-bold">Canchas</h1>
+
+      <div className="flex flex-wrap gap-2">
+        {sports?.map((sport) => (
+          <button
+            key={sport.id}
+            type="button"
+            onClick={() => {
+              setSportId(sport.id)
+              setShowNewForm(false)
+              setEditingId(null)
+            }}
+            className={`rounded-full border px-4 py-2 text-sm font-medium ${
+              sport.id === sportId
+                ? 'border-primary bg-primary text-primary-foreground'
+                : 'border-border bg-card text-foreground'
+            }`}
+          >
+            {sport.label}
+          </button>
+        ))}
+      </div>
+
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold">Canchas de pádel</h1>
+        <p className="text-sm text-muted-foreground">
+          {sports?.find((s) => s.id === sportId)?.label}
+        </p>
         {!showNewForm && (
           <Button size="sm" onClick={() => setShowNewForm(true)}>
             Nueva cancha
@@ -32,7 +63,7 @@ export function CourtsPage() {
 
       {isLoading && <p className="text-sm text-muted-foreground">Cargando...</p>}
 
-      {showNewForm && padel && (
+      {showNewForm && sportId && (
         <CourtForm
           submitLabel="Crear cancha"
           submitting={createCourt.isPending}
@@ -41,7 +72,7 @@ export function CourtsPage() {
           onSubmit={(values) => {
             setError(null)
             createCourt.mutate(
-              { complex_id: complexId, sport_id: padel.id, ...values },
+              { complex_id: complexId, sport_id: sportId, ...values },
               {
                 onSuccess: () => setShowNewForm(false),
                 onError: (err) => setError((err as Error).message),
