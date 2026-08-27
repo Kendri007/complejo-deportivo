@@ -3,18 +3,23 @@
 -- Un complejo vencido deja de ser visible para clientes automáticamente
 -- (se compara la fecha en cada policy/RPC), sin afectar el acceso del
 -- propio admin a su panel para poder pagar y reactivarse.
+--
+-- Idempotente: seguro de correr de nuevo si una corrida anterior se cortó
+-- a la mitad.
 
-create table public.platform_settings (
+create table if not exists public.platform_settings (
   id boolean primary key default true,
   monthly_price numeric(10, 2) not null default 0,
   constraint platform_settings_singleton check (id)
 );
 
-insert into public.platform_settings (id, monthly_price) values (true, 0);
+insert into public.platform_settings (id, monthly_price)
+values (true, 0)
+on conflict (id) do nothing;
 
-alter table public.complexes add column subscription_expires_at date;
+alter table public.complexes add column if not exists subscription_expires_at date;
 
-create table public.subscription_payments (
+create table if not exists public.subscription_payments (
   id uuid primary key default gen_random_uuid(),
   complex_id uuid not null references public.complexes (id) on delete cascade,
   amount numeric(10, 2) not null,
@@ -25,7 +30,7 @@ create table public.subscription_payments (
   created_at timestamptz not null default now()
 );
 
-create index subscription_payments_complex_id_idx on public.subscription_payments (complex_id);
+create index if not exists subscription_payments_complex_id_idx on public.subscription_payments (complex_id);
 
 -- subscription_expires_at is null => todavía no se empezó a trackear el
 -- pago de ese complejo (ej. viejo o exento): se considera activo. Una vez
@@ -94,19 +99,22 @@ grant execute on function public.record_subscription_payment(uuid, numeric, smal
 alter table public.platform_settings enable row level security;
 alter table public.subscription_payments enable row level security;
 
+drop policy if exists "platform_settings_select" on public.platform_settings;
 create policy "platform_settings_select" on public.platform_settings
   for select using (true);
 
+drop policy if exists "platform_settings_update_super_admin" on public.platform_settings;
 create policy "platform_settings_update_super_admin" on public.platform_settings
   for update using (public.is_super_admin());
 
+drop policy if exists "subscription_payments_select" on public.subscription_payments;
 create policy "subscription_payments_select" on public.subscription_payments
   for select using (public.is_super_admin() or public.is_complex_admin(complex_id));
 
 -- Sin insert/update/delete directo: todo pasa por record_subscription_payment().
 
 -- Reforzar policies de visibilidad pública con el estado de la suscripción ----------
-drop policy "complexes_select" on public.complexes;
+drop policy if exists "complexes_select" on public.complexes;
 create policy "complexes_select" on public.complexes
   for select using (
     (is_active and public.is_subscription_active(id))
@@ -114,7 +122,7 @@ create policy "complexes_select" on public.complexes
     or public.is_complex_admin(id)
   );
 
-drop policy "courts_select" on public.courts;
+drop policy if exists "courts_select" on public.courts;
 create policy "courts_select" on public.courts
   for select using (
     exists (
@@ -125,7 +133,7 @@ create policy "courts_select" on public.courts
     or public.is_complex_admin(complex_id)
   );
 
-drop policy "operating_hours_select" on public.operating_hours;
+drop policy if exists "operating_hours_select" on public.operating_hours;
 create policy "operating_hours_select" on public.operating_hours
   for select using (
     exists (
@@ -140,7 +148,7 @@ create policy "operating_hours_select" on public.operating_hours
     )
   );
 
-drop policy "blackout_dates_select" on public.blackout_dates;
+drop policy if exists "blackout_dates_select" on public.blackout_dates;
 create policy "blackout_dates_select" on public.blackout_dates
   for select using (
     exists (
