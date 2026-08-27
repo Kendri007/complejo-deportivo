@@ -10,8 +10,9 @@ import { useRegisterComplex } from '@/features/complexes/hooks'
 
 export function RegisterComplexPage() {
   const navigate = useNavigate()
-  const { refreshProfile } = useAuth()
+  const { session, user, refreshProfile } = useAuth()
   const registerComplex = useRegisterComplex()
+  const alreadyLoggedIn = !!session
 
   const [ownerName, setOwnerName] = useState('')
   const [email, setEmail] = useState('')
@@ -30,18 +31,24 @@ export function RegisterComplexPage() {
     setError(null)
     setSubmitting(true)
 
-    const { data, error: signUpError } = await signUpWithPassword(email, password, ownerName)
-    if (signUpError) {
-      setSubmitting(false)
-      setError(signUpError.message)
-      return
-    }
-    if (!data.session) {
-      setSubmitting(false)
-      setError(
-        'Te enviamos un email para confirmar tu cuenta. Confirmá y volvé a intentar registrar tu complejo.',
-      )
-      return
+    if (!alreadyLoggedIn) {
+      const { data, error: signUpError } = await signUpWithPassword(email, password, ownerName)
+      if (signUpError) {
+        setSubmitting(false)
+        setError(
+          signUpError.message.toLowerCase().includes('already registered')
+            ? 'Ese email ya tiene una cuenta. Iniciá sesión y volvé a esta página para registrar tu complejo con esa cuenta.'
+            : signUpError.message,
+        )
+        return
+      }
+      if (!data.session) {
+        setSubmitting(false)
+        setError(
+          'Te enviamos un email para confirmar tu cuenta. Confirmá y volvé a intentar registrar tu complejo.',
+        )
+        return
+      }
     }
 
     registerComplex.mutate(
@@ -73,37 +80,45 @@ export function RegisterComplexPage() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            <p className="text-sm font-semibold text-muted-foreground">Tu cuenta</p>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="ownerName">Tu nombre</Label>
-              <Input
-                id="ownerName"
-                required
-                value={ownerName}
-                onChange={(e) => setOwnerName(e.target.value)}
-              />
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="password">Contraseña</Label>
-              <Input
-                id="password"
-                type="password"
-                required
-                minLength={6}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
+            {alreadyLoggedIn ? (
+              <p className="text-sm text-muted-foreground">
+                Vas a registrar este complejo con tu cuenta actual ({user?.email}).
+              </p>
+            ) : (
+              <>
+                <p className="text-sm font-semibold text-muted-foreground">Tu cuenta</p>
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="ownerName">Tu nombre</Label>
+                  <Input
+                    id="ownerName"
+                    required
+                    value={ownerName}
+                    onChange={(e) => setOwnerName(e.target.value)}
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="password">Contraseña</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    required
+                    minLength={6}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                </div>
+              </>
+            )}
 
             <p className="mt-2 text-sm font-semibold text-muted-foreground">Tu complejo</p>
             <div className="flex flex-col gap-2">
@@ -152,12 +167,14 @@ export function RegisterComplexPage() {
               {submitting ? 'Registrando...' : 'Registrar mi complejo'}
             </Button>
 
-            <p className="text-center text-sm text-muted-foreground">
-              ¿Ya tenés cuenta?{' '}
-              <Link to="/login" className="text-primary underline underline-offset-4">
-                Ingresá
-              </Link>
-            </p>
+            {!alreadyLoggedIn && (
+              <p className="text-center text-sm text-muted-foreground">
+                ¿Ya tenés cuenta?{' '}
+                <Link to="/login" className="text-primary underline underline-offset-4">
+                  Ingresá
+                </Link>
+              </p>
+            )}
           </form>
         </CardContent>
       </Card>
