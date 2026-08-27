@@ -1,6 +1,5 @@
 insert into public.sports (key, label, icon) values
   ('futbol', 'Fútbol', 'circle-dot'),
-  ('beach_futbol', 'Beach Fútbol', 'sun'),
   ('beach_volley', 'Beach Vóley', 'waves'),
   ('beach_tenis', 'Beach Tenis', 'sunset'),
   ('tenis', 'Tenis', 'circle'),

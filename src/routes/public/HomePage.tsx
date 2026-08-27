@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 
-const SPORTS = ['Fútbol', 'Beach Fútbol', 'Beach Vóley', 'Beach Tenis', 'Tenis', 'Pádel']
+const SPORTS = ['Fútbol', 'Beach Vóley', 'Beach Tenis', 'Tenis', 'Pádel']
 
 const CLIENT_STEPS = [
   {
