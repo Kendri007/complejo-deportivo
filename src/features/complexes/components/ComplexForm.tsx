@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Switch } from '@/components/ui/switch'
+import { AddressAutocomplete } from '@/features/geolocation/components/AddressAutocomplete'
 import type { ComplexInsert } from '@/features/complexes/types'
 
 export type ComplexFormValues = Omit<ComplexInsert, 'created_by'>
@@ -64,37 +65,17 @@ export function ComplexForm({
         />
       </div>
 
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="address">Dirección</Label>
-        <Input
-          id="address"
-          value={values.address ?? ''}
-          onChange={(e) => update('address', e.target.value)}
-        />
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="lat">Latitud</Label>
-          <Input
-            id="lat"
-            type="number"
-            step="any"
-            value={values.lat ?? ''}
-            onChange={(e) => update('lat', e.target.value === '' ? null : Number(e.target.value))}
-          />
-        </div>
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="lng">Longitud</Label>
-          <Input
-            id="lng"
-            type="number"
-            step="any"
-            value={values.lng ?? ''}
-            onChange={(e) => update('lng', e.target.value === '' ? null : Number(e.target.value))}
-          />
-        </div>
-      </div>
+      <AddressAutocomplete
+        id="address"
+        label="Dirección"
+        value={values.address ?? ''}
+        onChange={(address) => update('address', address)}
+        onPlaceSelected={(place) => {
+          update('address', place.address)
+          update('lat', place.lat)
+          update('lng', place.lng)
+        }}
+      />
 
       <div className="flex flex-col gap-2">
         <Label htmlFor="phone">Teléfono</Label>

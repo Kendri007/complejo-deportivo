@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label'
 import { useAuth } from '@/context/AuthProvider'
 import { signUpWithPassword } from '@/features/auth/api'
 import { useRegisterComplex } from '@/features/complexes/hooks'
+import { AddressAutocomplete } from '@/features/geolocation/components/AddressAutocomplete'
 
 export function RegisterComplexPage() {
   const navigate = useNavigate()
@@ -20,8 +21,8 @@ export function RegisterComplexPage() {
   const [complexName, setComplexName] = useState('')
   const [address, setAddress] = useState('')
   const [phone, setPhone] = useState('')
-  const [lat, setLat] = useState('')
-  const [lng, setLng] = useState('')
+  const [lat, setLat] = useState<number | null>(null)
+  const [lng, setLng] = useState<number | null>(null)
 
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -56,8 +57,8 @@ export function RegisterComplexPage() {
         name: complexName,
         address: address || null,
         phone: phone || null,
-        lat: lat === '' ? null : Number(lat),
-        lng: lng === '' ? null : Number(lng),
+        lat,
+        lng,
       },
       {
         onSuccess: async (complexId) => {
@@ -130,32 +131,17 @@ export function RegisterComplexPage() {
                 onChange={(e) => setComplexName(e.target.value)}
               />
             </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="address">Dirección</Label>
-              <Input id="address" value={address} onChange={(e) => setAddress(e.target.value)} />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="lat">Latitud</Label>
-                <Input
-                  id="lat"
-                  type="number"
-                  step="any"
-                  value={lat}
-                  onChange={(e) => setLat(e.target.value)}
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="lng">Longitud</Label>
-                <Input
-                  id="lng"
-                  type="number"
-                  step="any"
-                  value={lng}
-                  onChange={(e) => setLng(e.target.value)}
-                />
-              </div>
-            </div>
+            <AddressAutocomplete
+              id="address"
+              label="Dirección"
+              value={address}
+              onChange={setAddress}
+              onPlaceSelected={(place) => {
+                setAddress(place.address)
+                setLat(place.lat)
+                setLng(place.lng)
+              }}
+            />
             <div className="flex flex-col gap-2">
               <Label htmlFor="phone">Teléfono</Label>
               <Input id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
