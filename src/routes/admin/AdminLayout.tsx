@@ -1,5 +1,6 @@
-import { NavLink, Outlet, useParams } from 'react-router-dom'
+import { Link, NavLink, Outlet, useParams } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
+import { useAuth } from '@/context/AuthProvider'
 import { signOut } from '@/features/auth/api'
 
 const TABS = [
@@ -11,14 +12,25 @@ const TABS = [
 
 export function AdminLayout() {
   const { complexId } = useParams<{ complexId: string }>()
+  const { role } = useAuth()
 
   return (
     <div className="flex min-h-svh flex-col">
       <header className="flex items-center justify-between border-b border-border p-4">
         <span className="font-bold">Panel de complejo</span>
-        <Button variant="ghost" size="sm" onClick={() => signOut()}>
-          Salir
-        </Button>
+        <div className="flex items-center gap-1">
+          {role === 'super_admin' && (
+            <Button asChild variant="ghost" size="sm">
+              <Link to="/super-admin">Super admin</Link>
+            </Button>
+          )}
+          <Button asChild variant="ghost" size="sm">
+            <Link to="/app">Ver como cliente</Link>
+          </Button>
+          <Button variant="ghost" size="sm" onClick={() => signOut()}>
+            Salir
+          </Button>
+        </div>
       </header>
 
       {complexId && (

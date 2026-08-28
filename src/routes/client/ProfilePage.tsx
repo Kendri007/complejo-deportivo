@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react'
+import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -63,6 +64,20 @@ export function ProfilePage() {
           {updateProfile.isPending ? 'Guardando...' : 'Guardar cambios'}
         </Button>
       </form>
+
+      {(profile?.role === 'complex_admin' || profile?.role === 'super_admin') && (
+        <div className="flex flex-col gap-2">
+          <p className="text-sm font-semibold text-muted-foreground">Paneles de gestión</p>
+          <Button asChild variant="secondary">
+            <Link to="/admin">Ir al panel de complejos</Link>
+          </Button>
+          {profile.role === 'super_admin' && (
+            <Button asChild variant="secondary">
+              <Link to="/super-admin">Ir al panel de super-admin</Link>
+            </Button>
+          )}
+        </div>
+      )}
 
       <Button variant="secondary" onClick={() => signOut()}>
         Cerrar sesión
