@@ -1,10 +1,16 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import { AddressAutocomplete } from '@/features/geolocation/components/AddressAutocomplete'
 import { useGeolocation } from '@/features/geolocation/hooks'
 import { useNearbyComplexes } from '@/features/complexes/hooks'
 
 export function NearbyComplexesPage() {
   const geo = useGeolocation()
+  const [manualAddress, setManualAddress] = useState('')
+  const [showManualSearch, setShowManualSearch] = useState(false)
+
   const coords = geo.status === 'success' ? { lat: geo.lat, lng: geo.lng } : null
   const { data: complexes, isLoading } = useNearbyComplexes(coords)
 
@@ -15,7 +21,40 @@ export function NearbyComplexesPage() {
       {geo.status === 'loading' && (
         <p className="text-sm text-muted-foreground">Buscando tu ubicación...</p>
       )}
-      {geo.status === 'error' && <p className="text-sm text-destructive">{geo.message}</p>}
+
+      {geo.status === 'error' && (
+        <div className="flex flex-col gap-3 rounded-lg border border-border p-3">
+          <p className="text-sm text-destructive">{geo.message}</p>
+          <div className="flex gap-2">
+            <Button type="button" variant="secondary" size="sm" onClick={geo.retry}>
+              Reintentar
+            </Button>
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={() => setShowManualSearch((v) => !v)}
+            >
+              Buscar por dirección
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {(showManualSearch || (geo.status === 'success' && geo.manual)) && (
+        <AddressAutocomplete
+          id="manual-location"
+          label="Tu dirección"
+          value={manualAddress}
+          onChange={setManualAddress}
+          onPlaceSelected={(place) => {
+            setManualAddress(place.address)
+            geo.setManualLocation(place.lat, place.lng)
+            setShowManualSearch(false)
+          }}
+        />
+      )}
+
       {isLoading && <p className="text-sm text-muted-foreground">Cargando complejos...</p>}
 
       {complexes && complexes.length === 0 && (
