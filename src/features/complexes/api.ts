@@ -28,6 +28,17 @@ export async function registerComplex(input: {
   return data
 }
 
+export async function listFeaturedComplexes(limit = 6) {
+  const { data, error } = await supabase
+    .from('complexes')
+    .select('*')
+    .eq('is_active', true)
+    .order('created_at', { ascending: false })
+    .limit(limit)
+  if (error) throw error
+  return data
+}
+
 export async function nearbyComplexes(lat: number, lng: number, radiusKm = 25) {
   const { data, error } = await supabase.rpc('nearby_complexes', {
     user_lat: lat,

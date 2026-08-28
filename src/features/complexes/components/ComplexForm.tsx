@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Switch } from '@/components/ui/switch'
 import { AddressAutocomplete } from '@/features/geolocation/components/AddressAutocomplete'
+import { ComplexPhotoUpload } from '@/features/complexes/components/ComplexPhotoUpload'
 import type { ComplexInsert } from '@/features/complexes/types'
 
 export type ComplexFormValues = Omit<ComplexInsert, 'created_by'>
@@ -21,12 +22,14 @@ const emptyValues: ComplexFormValues = {
 }
 
 export function ComplexForm({
+  complexId,
   initialValues,
   submitLabel,
   submitting,
   error,
   onSubmit,
 }: {
+  complexId?: string
   initialValues?: Partial<ComplexFormValues>
   submitLabel: string
   submitting: boolean
@@ -86,14 +89,23 @@ export function ComplexForm({
         />
       </div>
 
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="cover_image_url">URL de foto de portada</Label>
-        <Input
-          id="cover_image_url"
-          value={values.cover_image_url ?? ''}
-          onChange={(e) => update('cover_image_url', e.target.value)}
+      {complexId ? (
+        <ComplexPhotoUpload
+          complexId={complexId}
+          coverImageUrl={values.cover_image_url}
+          onUploaded={(url) => update('cover_image_url', url)}
         />
-      </div>
+      ) : (
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="cover_image_url">URL de foto de portada (opcional)</Label>
+          <Input
+            id="cover_image_url"
+            placeholder="Podés subir una foto después de crear el complejo"
+            value={values.cover_image_url ?? ''}
+            onChange={(e) => update('cover_image_url', e.target.value)}
+          />
+        </div>
+      )}
 
       <div className="flex items-center justify-between rounded-lg border border-border p-3">
         <Label htmlFor="is_active">Activo (visible para clientes)</Label>

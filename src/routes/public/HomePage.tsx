@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import { useFeaturedComplexes } from '@/features/complexes/hooks'
 
 const SPORTS = ['Fútbol', 'Beach Vóley', 'Beach Tenis', 'Tenis', 'Pádel']
 
@@ -20,6 +21,8 @@ const CLIENT_STEPS = [
 ]
 
 export function HomePage() {
+  const { data: featuredComplexes, isLoading: loadingFeatured } = useFeaturedComplexes()
+
   return (
     <div className="flex min-h-svh flex-col">
       <header className="flex items-center justify-between p-4">
@@ -51,6 +54,36 @@ export function HomePage() {
             </Button>
           </div>
         </section>
+
+        {/* Complejos en la plataforma */}
+        {(loadingFeatured || (featuredComplexes && featuredComplexes.length > 0)) && (
+          <section className="flex flex-col gap-4">
+            <h2 className="text-2xl font-bold">Complejos en la plataforma</h2>
+            {loadingFeatured && (
+              <p className="text-sm text-muted-foreground">Cargando...</p>
+            )}
+            <div className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-2">
+              {featuredComplexes?.map((complex) => (
+                <Link key={complex.id} to={`/app/complexes/${complex.id}`} className="shrink-0">
+                  <Card className="w-64 overflow-hidden">
+                    <div
+                      className="h-32 w-full bg-cover bg-center bg-muted"
+                      style={
+                        complex.cover_image_url
+                          ? { backgroundImage: `url(${complex.cover_image_url})` }
+                          : undefined
+                      }
+                    />
+                    <CardContent className="p-4">
+                      <p className="font-semibold">{complex.name}</p>
+                      <p className="truncate text-sm text-muted-foreground">{complex.address}</p>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Cómo funciona */}
         <section className="flex flex-col gap-4">

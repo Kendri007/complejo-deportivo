@@ -28,6 +28,7 @@ export function ComplexDetailPage() {
       <div>
         <h1 className="mb-4 text-xl font-bold">{complex.name}</h1>
         <ComplexForm
+          complexId={id}
           initialValues={complex}
           submitLabel="Guardar cambios"
           submitting={updateComplex.isPending}

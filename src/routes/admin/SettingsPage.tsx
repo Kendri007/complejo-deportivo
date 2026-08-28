@@ -25,6 +25,7 @@ export function SettingsPage() {
       <div>
         <h1 className="mb-4 text-xl font-bold">Configuración</h1>
         <ComplexForm
+          complexId={complexId}
           initialValues={complex}
           submitLabel={saved ? 'Guardado' : 'Guardar cambios'}
           submitting={updateComplex.isPending}
