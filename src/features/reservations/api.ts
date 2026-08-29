@@ -35,6 +35,15 @@ export async function listMyReservations() {
   return data
 }
 
+export async function getWeekAvailability(courtId: string, startDate: string) {
+  const { data, error } = await supabase.rpc('get_week_availability', {
+    target_court_id: courtId,
+    start_date: startDate,
+  })
+  if (error) throw error
+  return data
+}
+
 export async function getAvailableSlots(courtId: string, date: string) {
   const { data, error } = await supabase.rpc('get_available_slots', {
     target_court_id: courtId,

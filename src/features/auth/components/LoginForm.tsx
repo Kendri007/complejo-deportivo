@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -7,6 +7,8 @@ import { signInWithGoogle, signInWithPassword } from '@/features/auth/api'
 
 export function LoginForm() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const redirectTo = searchParams.get('redirect') || '/app'
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -22,7 +24,7 @@ export function LoginForm() {
       setError(error.message)
       return
     }
-    navigate('/app')
+    navigate(redirectTo)
   }
 
   return (
@@ -57,7 +59,7 @@ export function LoginForm() {
         type="button"
         variant="secondary"
         className="w-full"
-        onClick={() => signInWithGoogle()}
+        onClick={() => signInWithGoogle(redirectTo)}
       >
         Continuar con Google
       </Button>

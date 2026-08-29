@@ -356,6 +356,10 @@ export type Database = {
         Args: { target_court_id: string; target_date: string }
         Returns: { start_time: string }[]
       }
+      get_week_availability: {
+        Args: { target_court_id: string; start_date: string }
+        Returns: { date: string; start_time: string }[]
+      }
       create_reservation: {
         Args: {
           target_court_id: string

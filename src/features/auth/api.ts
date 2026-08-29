@@ -12,10 +12,10 @@ export function signUpWithPassword(email: string, password: string, fullName: st
   })
 }
 
-export function signInWithGoogle() {
+export function signInWithGoogle(redirectPath = '/app') {
   return supabase.auth.signInWithOAuth({
     provider: 'google',
-    options: { redirectTo: `${window.location.origin}/app` },
+    options: { redirectTo: `${window.location.origin}${redirectPath}` },
   })
 }
 
