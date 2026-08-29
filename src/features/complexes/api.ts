@@ -50,9 +50,19 @@ export async function nearbyComplexes(lat: number, lng: number, radiusKm = 25) {
 }
 
 export async function listMyManagedComplexes() {
+  // Filtro explícito por user_id: la policy de complex_admins también deja
+  // pasar todas las filas a un super_admin (or is_super_admin()), así que
+  // sin este filtro un super_admin viendo "mis complejos" recibiría las
+  // asignaciones de admin de TODO el mundo, no solo las propias.
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return []
+
   const { data, error } = await supabase
     .from('complex_admins')
     .select('complexes(*)')
+    .eq('user_id', user.id)
     .order('created_at', { ascending: false })
   if (error) throw error
   return data.map((row) => row.complexes).filter((c): c is NonNullable<typeof c> => c !== null)

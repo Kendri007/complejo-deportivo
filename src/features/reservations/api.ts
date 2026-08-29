@@ -25,9 +25,19 @@ export async function listComplexReservations(complexId: string) {
 }
 
 export async function listMyReservations() {
+  // No basta con confiar en RLS acá: las policies de reservations también
+  // le dan visibilidad a un complex_admin/super_admin sobre reservas ajenas
+  // (para el panel de admin), así que sin este filtro explícito "Mis
+  // reservas" les mostraba (y dejaba cancelar) reservas de otros clientes.
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return []
+
   const { data, error } = await supabase
     .from('reservations')
     .select('*, courts(name, complexes(name), sports(label))')
+    .eq('user_id', user.id)
     .eq('status', 'confirmed')
     .order('date', { ascending: true })
     .order('start_time', { ascending: true })
