@@ -5,11 +5,13 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { toDateKey } from '@/components/shared/DatePill'
 import { CourtCalendar, type SelectedSlot } from '@/features/reservations/components/CourtCalendar'
+import { PaymentMethodPicker } from '@/features/reservations/components/PaymentMethodPicker'
 import { useCourt } from '@/features/courts/hooks'
 import { courtSportLabels } from '@/features/courts/types'
 import { useOperatingHours } from '@/features/schedule/hooks'
 import { useCreateReservation } from '@/features/reservations/hooks'
 import { getMatchIdForReservation } from '@/features/reservations/api'
+import type { PaymentMethod } from '@/types/database.types'
 
 function startOfToday() {
   const d = new Date()
@@ -27,6 +29,8 @@ export function BookCourtPage() {
   const [selected, setSelected] = useState<SelectedSlot | null>(null)
   const [reservationType, setReservationType] = useState<'private' | 'match'>('private')
   const [targetPlayers, setTargetPlayers] = useState(court?.default_capacity ?? 4)
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('efectivo')
+  const [paymentReference, setPaymentReference] = useState('')
   const [error, setError] = useState<string | null>(null)
 
   const createReservation = useCreateReservation()
@@ -45,6 +49,8 @@ export function BookCourtPage() {
         startTime: selected.time,
         type: reservationType,
         matchTargetPlayers: reservationType === 'match' ? targetPlayers : undefined,
+        paymentMethod,
+        paymentReference: paymentReference || undefined,
       },
       {
         onSuccess: async (reservationId) => {
@@ -70,7 +76,9 @@ export function BookCourtPage() {
         {court?.price_per_hour != null && (
           <p className="mt-1 text-sm">
             <span className="font-semibold text-primary">${court.price_per_hour} / hora</span>{' '}
-            <span className="text-muted-foreground">· se paga en el complejo, no online</span>
+            <span className="text-muted-foreground">
+              · pagás por transferencia o en efectivo, no hay cobro con tarjeta
+            </span>
           </p>
         )}
       </div>
@@ -150,6 +158,16 @@ export function BookCourtPage() {
               </div>
             )}
           </div>
+
+          {court?.complexes && (
+            <PaymentMethodPicker
+              complex={court.complexes}
+              method={paymentMethod}
+              onMethodChange={setPaymentMethod}
+              reference={paymentReference}
+              onReferenceChange={setPaymentReference}
+            />
+          )}
 
           {error && <p className="text-sm text-destructive">{error}</p>}
 

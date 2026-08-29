@@ -19,6 +19,10 @@ const emptyValues: ComplexFormValues = {
   phone: '',
   cover_image_url: '',
   is_active: true,
+  payment_pago_movil: '',
+  payment_binance: '',
+  payment_zinli: '',
+  payment_zelle: '',
 }
 
 export function ComplexForm({
@@ -106,6 +110,50 @@ export function ComplexForm({
           />
         </div>
       )}
+
+      <div className="flex flex-col gap-3 rounded-lg border border-border p-3">
+        <p className="text-sm font-semibold">Datos para cobrar (opcional)</p>
+        <p className="text-xs text-muted-foreground">
+          Se le muestran al cliente al reservar. Dejá vacío el método que no acepten — siempre
+          pueden pagar en efectivo en el complejo.
+        </p>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="payment_pago_movil">Pago Móvil</Label>
+          <Textarea
+            id="payment_pago_movil"
+            placeholder="Banco, teléfono y CI"
+            value={values.payment_pago_movil ?? ''}
+            onChange={(e) => update('payment_pago_movil', e.target.value)}
+          />
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="payment_binance">Binance</Label>
+          <Input
+            id="payment_binance"
+            placeholder="ID de Binance o email"
+            value={values.payment_binance ?? ''}
+            onChange={(e) => update('payment_binance', e.target.value)}
+          />
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="payment_zinli">Zinli</Label>
+          <Input
+            id="payment_zinli"
+            placeholder="Tag o email de Zinli"
+            value={values.payment_zinli ?? ''}
+            onChange={(e) => update('payment_zinli', e.target.value)}
+          />
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="payment_zelle">Zelle</Label>
+          <Input
+            id="payment_zelle"
+            placeholder="Email de Zelle"
+            value={values.payment_zelle ?? ''}
+            onChange={(e) => update('payment_zelle', e.target.value)}
+          />
+        </div>
+      </div>
 
       <div className="flex items-center justify-between rounded-lg border border-border p-3">
         <Label htmlFor="is_active">Activo (visible para clientes)</Label>

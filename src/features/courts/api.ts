@@ -36,7 +36,9 @@ export async function listActiveCourtsForComplex(complexId: string) {
 export async function getCourt(id: string) {
   const { data, error } = await supabase
     .from('courts')
-    .select('*, court_sports(sport_id, sports(id, key, label)), complexes(name)')
+    .select(
+      '*, court_sports(sport_id, sports(id, key, label)), complexes(name, payment_pago_movil, payment_binance, payment_zinli, payment_zelle)',
+    )
     .eq('id', id)
     .single()
   if (error) throw error

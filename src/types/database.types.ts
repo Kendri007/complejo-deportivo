@@ -10,6 +10,7 @@ export type ReservationStatus = 'confirmed' | 'cancelled'
 export type ReservationType = 'private' | 'match'
 export type MatchStatus = 'open' | 'full' | 'cancelled' | 'completed'
 export type ParticipantStatus = 'joined' | 'left'
+export type PaymentMethod = 'pago_movil' | 'binance' | 'zinli' | 'zelle' | 'efectivo'
 
 export type Database = {
   public: {
@@ -49,6 +50,10 @@ export type Database = {
           is_active: boolean
           created_by: string | null
           subscription_expires_at: string | null
+          payment_pago_movil: string | null
+          payment_binance: string | null
+          payment_zinli: string | null
+          payment_zelle: string | null
           created_at: string
           updated_at: string
         }
@@ -64,6 +69,10 @@ export type Database = {
           is_active?: boolean
           created_by?: string | null
           subscription_expires_at?: string | null
+          payment_pago_movil?: string | null
+          payment_binance?: string | null
+          payment_zinli?: string | null
+          payment_zelle?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -248,6 +257,8 @@ export type Database = {
           status: ReservationStatus
           type: ReservationType
           price: number | null
+          payment_method: PaymentMethod | null
+          payment_reference: string | null
           created_at: string
           updated_at: string
         }
@@ -261,6 +272,8 @@ export type Database = {
           status?: ReservationStatus
           type?: ReservationType
           price?: number | null
+          payment_method?: PaymentMethod | null
+          payment_reference?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -396,6 +409,8 @@ export type Database = {
           target_start_time: string
           reservation_type?: ReservationType
           match_target_players?: number | null
+          payment_method?: PaymentMethod | null
+          payment_reference?: string | null
         }
         Returns: string
       }

@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { useCancelMyReservation, useMyReservations } from '@/features/reservations/hooks'
+import { PAYMENT_METHOD_LABELS } from '@/features/reservations/paymentMethods'
 
 export function MyReservationsPage() {
   const { data: reservations, isLoading } = useMyReservations()
@@ -28,6 +29,7 @@ export function MyReservationsPage() {
                 <p className="text-sm text-muted-foreground">
                   {r.courts?.name} · {r.date} · {r.start_time.slice(0, 5)}-{r.end_time.slice(0, 5)}
                   {r.type === 'match' ? ' · Partido' : ''}
+                  {r.payment_method ? ` · ${PAYMENT_METHOD_LABELS[r.payment_method]}` : ''}
                 </p>
               </div>
               <Button

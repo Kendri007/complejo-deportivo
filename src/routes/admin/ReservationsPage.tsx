@@ -6,6 +6,7 @@ import { CourtCalendar, type SelectedSlot } from '@/features/reservations/compon
 import { useAllCourts } from '@/features/courts/hooks'
 import { useOperatingHours } from '@/features/schedule/hooks'
 import { useCancelReservationAsAdmin, useComplexReservations } from '@/features/reservations/hooks'
+import { PAYMENT_METHOD_LABELS } from '@/features/reservations/paymentMethods'
 
 function startOfToday() {
   const d = new Date()
@@ -121,6 +122,14 @@ export function ReservationsPage() {
                       {selectedReservation.type === 'match' ? 'Partido' : 'Privada'} ·{' '}
                       {selectedReservation.price != null ? `$${selectedReservation.price}` : 'Sin precio'}
                     </p>
+                    <p className="text-sm text-muted-foreground">
+                      {selectedReservation.payment_method
+                        ? PAYMENT_METHOD_LABELS[selectedReservation.payment_method]
+                        : 'Método de pago sin especificar'}
+                      {selectedReservation.payment_reference
+                        ? ` · Ref: ${selectedReservation.payment_reference}`
+                        : ''}
+                    </p>
                   </div>
                   <Button
                     variant="ghost"
@@ -167,6 +176,8 @@ export function ReservationsPage() {
                   {r.start_time.slice(0, 5)} - {r.end_time.slice(0, 5)} ·{' '}
                   {r.client_name ?? 'Cliente'} · {r.type === 'match' ? 'Partido' : 'Privada'}
                   {r.price != null ? ` · $${r.price}` : ''}
+                  {r.payment_method ? ` · ${PAYMENT_METHOD_LABELS[r.payment_method]}` : ''}
+                  {r.payment_reference ? ` (ref: ${r.payment_reference})` : ''}
                 </p>
               </div>
               <Button

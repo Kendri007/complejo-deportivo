@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase'
+import type { PaymentMethod } from '@/types/database.types'
 
 export async function listComplexReservations(complexId: string) {
   const { data: reservations, error } = await supabase
@@ -69,6 +70,8 @@ export async function createReservation(input: {
   startTime: string
   type: 'private' | 'match'
   matchTargetPlayers?: number
+  paymentMethod?: PaymentMethod
+  paymentReference?: string
 }) {
   const { data, error } = await supabase.rpc('create_reservation', {
     target_court_id: input.courtId,
@@ -76,6 +79,8 @@ export async function createReservation(input: {
     target_start_time: input.startTime,
     reservation_type: input.type,
     match_target_players: input.matchTargetPlayers ?? null,
+    payment_method: input.paymentMethod ?? null,
+    payment_reference: input.paymentReference || null,
   })
   if (error) throw error
   return data
