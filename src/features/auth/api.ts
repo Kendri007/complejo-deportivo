@@ -22,3 +22,14 @@ export function signInWithGoogle(redirectPath = '/app') {
 export function signOut() {
   return supabase.auth.signOut()
 }
+
+export async function fetchUserRole(userId: string) {
+  const { data } = await supabase.from('profiles').select('role').eq('id', userId).single()
+  return data?.role ?? 'client'
+}
+
+export function homeRouteForRole(role: string) {
+  if (role === 'super_admin') return '/super-admin'
+  if (role === 'complex_admin') return '/admin'
+  return '/app'
+}

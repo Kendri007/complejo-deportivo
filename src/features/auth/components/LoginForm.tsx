@@ -3,12 +3,13 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { signInWithGoogle, signInWithPassword } from '@/features/auth/api'
+import { fetchUserRole, homeRouteForRole, signInWithGoogle, signInWithPassword } from '@/features/auth/api'
 
 export function LoginForm() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const redirectTo = searchParams.get('redirect') || '/app'
+  const explicitRedirect = searchParams.get('redirect')
+  const redirectTo = explicitRedirect || '/app'
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -18,12 +19,24 @@ export function LoginForm() {
     e.preventDefault()
     setError(null)
     setLoading(true)
-    const { error } = await signInWithPassword(email, password)
-    setLoading(false)
+    const { data, error } = await signInWithPassword(email, password)
     if (error) {
+      setLoading(false)
       setError(error.message)
       return
     }
+
+    // Si no venía de un link específico (ej. "reservá esta cancha"), a un
+    // admin/super-admin lo mandamos directo a su panel en vez de a la vista
+    // de cliente genérica — es lo que va a usar en el 99% de los casos.
+    if (!explicitRedirect && data.session) {
+      const role = await fetchUserRole(data.session.user.id)
+      setLoading(false)
+      navigate(homeRouteForRole(role))
+      return
+    }
+
+    setLoading(false)
     navigate(redirectTo)
   }
 
