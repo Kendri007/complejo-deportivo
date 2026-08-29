@@ -30,6 +30,17 @@ export function OperatingHoursEditor({ courtId }: { courtId: string }) {
     setRows((prev) => ({ ...prev, [day]: { ...prev[day], ...patch } }))
   }
 
+  function applyToAllDays() {
+    // Copia el horario del primer día ya activo a todos; si ninguno está
+    // activo todavía, usa el default (09:00-23:00).
+    const template = DAYS_OF_WEEK.map((d) => rows[d.value]).find((r) => r?.open) ?? DEFAULT_ROW
+    const next: Record<number, DayRow> = {}
+    for (const day of DAYS_OF_WEEK) {
+      next[day.value] = { open: true, open_time: template.open_time, close_time: template.close_time }
+    }
+    setRows(next)
+  }
+
   function handleSave() {
     const payload = DAYS_OF_WEEK.filter((d) => rows[d.value]?.open).map((d) => ({
       day_of_week: d.value,
@@ -45,6 +56,10 @@ export function OperatingHoursEditor({ courtId }: { courtId: string }) {
 
   return (
     <div className="flex flex-col gap-3">
+      <Button type="button" variant="secondary" size="sm" className="self-start" onClick={applyToAllDays}>
+        Todos los días
+      </Button>
+
       {DAYS_OF_WEEK.map((day) => {
         const row = rows[day.value]
         return (
