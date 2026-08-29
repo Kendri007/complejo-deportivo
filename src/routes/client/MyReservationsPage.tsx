@@ -21,7 +21,9 @@ export function MyReservationsPage() {
             <CardContent className="flex items-center justify-between p-4">
               <div>
                 <p className="font-semibold">
-                  {r.courts?.sports?.label} · {r.courts?.complexes?.name}
+                  {r.courts?.court_sports.map((cs) => cs.sports?.label).filter(Boolean).join(' · ')}
+                  {' · '}
+                  {r.courts?.complexes?.name}
                 </p>
                 <p className="text-sm text-muted-foreground">
                   {r.courts?.name} · {r.date} · {r.start_time.slice(0, 5)}-{r.end_time.slice(0, 5)}

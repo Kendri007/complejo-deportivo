@@ -3,6 +3,7 @@ import { useParams, useSearchParams } from 'react-router-dom'
 import { OperatingHoursEditor } from '@/features/schedule/components/OperatingHoursEditor'
 import { BlackoutDatesPanel } from '@/features/schedule/components/BlackoutDatesPanel'
 import { useAllCourts } from '@/features/courts/hooks'
+import { courtSportLabels } from '@/features/courts/types'
 
 export function SchedulePage() {
   const { complexId } = useParams<{ complexId: string }>()
@@ -47,7 +48,7 @@ export function SchedulePage() {
                   : 'border-border bg-card text-foreground'
               }`}
             >
-              {court.name} · {court.sports?.label}
+              {court.name} · {courtSportLabels(court)}
             </button>
           ))}
         </div>

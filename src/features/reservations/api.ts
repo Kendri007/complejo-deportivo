@@ -36,7 +36,7 @@ export async function listMyReservations() {
 
   const { data, error } = await supabase
     .from('reservations')
-    .select('*, courts(name, complexes(name), sports(label))')
+    .select('*, courts(name, complexes(name), court_sports(sports(label)))')
     .eq('user_id', user.id)
     .eq('status', 'confirmed')
     .order('date', { ascending: true })

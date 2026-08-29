@@ -1,11 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
+  addSportToCourt,
   createCourt,
   deleteCourt,
   getCourt,
   listActiveCourtsForComplex,
   listAllCourtsByComplex,
   listCourtsByComplexAndSport,
+  removeSportFromCourt,
   updateCourt,
 } from '@/features/courts/api'
 import type { CourtInsert, CourtUpdate } from '@/features/courts/types'
@@ -62,6 +64,31 @@ export function useDeleteCourt(complexId: string) {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (id: string) => deleteCourt(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['courts', complexId] }),
+  })
+}
+
+export function useAddSportToCourt(complexId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ courtId, sportId }: { courtId: string; sportId: string }) =>
+      addSportToCourt(courtId, sportId),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['courts', complexId] }),
+  })
+}
+
+export function useRemoveSportFromCourt(complexId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({
+      courtId,
+      sportId,
+      primarySportId,
+    }: {
+      courtId: string
+      sportId: string
+      primarySportId: string
+    }) => removeSportFromCourt(courtId, sportId, primarySportId),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['courts', complexId] }),
   })
 }

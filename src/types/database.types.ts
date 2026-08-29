@@ -164,6 +164,35 @@ export type Database = {
           },
         ]
       }
+      court_sports: {
+        Row: {
+          id: string
+          court_id: string
+          sport_id: string
+        }
+        Insert: {
+          id?: string
+          court_id: string
+          sport_id: string
+        }
+        Update: Partial<Database['public']['Tables']['court_sports']['Insert']>
+        Relationships: [
+          {
+            foreignKeyName: 'court_sports_court_id_fkey'
+            columns: ['court_id']
+            isOneToOne: false
+            referencedRelation: 'courts'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'court_sports_sport_id_fkey'
+            columns: ['sport_id']
+            isOneToOne: false
+            referencedRelation: 'sports'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       operating_hours: {
         Row: {
           id: string

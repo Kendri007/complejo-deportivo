@@ -2,6 +2,7 @@ import { Link, useParams } from 'react-router-dom'
 import { Card, CardContent } from '@/components/ui/card'
 import { useComplex } from '@/features/complexes/hooks'
 import { useActiveCourts } from '@/features/courts/hooks'
+import { courtSportLabels } from '@/features/courts/types'
 import { StubPage } from '@/routes/StubPage'
 
 export function ComplexDetailPage() {
@@ -39,7 +40,7 @@ export function ComplexDetailPage() {
                 <div>
                   <p className="font-semibold">{court.name}</p>
                   <p className="text-sm text-muted-foreground">
-                    {court.sports?.label} · {court.surface || 'Sin superficie'}
+                    {courtSportLabels(court)} · {court.surface || 'Sin superficie'}
                   </p>
                 </div>
                 {court.price_per_hour && (

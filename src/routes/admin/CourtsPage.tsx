@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { CourtForm, type CourtFormValues } from '@/features/courts/components/CourtForm'
+import { CourtSportsTags } from '@/features/courts/components/CourtSportsTags'
 import { useCourts, useCreateCourt, useDeleteCourt, useUpdateCourt } from '@/features/courts/hooks'
 import { useSports } from '@/features/sports/hooks'
 
@@ -112,11 +113,12 @@ export function CourtsPage() {
               key={court.id}
               className="flex items-center justify-between rounded-2xl border border-border bg-card p-4"
             >
-              <div>
+              <div className="flex flex-col gap-1">
                 <p className="font-semibold">{court.name}</p>
                 <p className="text-sm text-muted-foreground">
                   {court.surface || 'Sin superficie'} · {court.is_active ? 'Activa' : 'Inactiva'}
                 </p>
+                <CourtSportsTags complexId={complexId} court={court} />
               </div>
               <div className="flex gap-2">
                 <Button asChild variant="secondary" size="sm">

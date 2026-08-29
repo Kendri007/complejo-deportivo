@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label'
 import { toDateKey } from '@/components/shared/DatePill'
 import { CourtCalendar, type SelectedSlot } from '@/features/reservations/components/CourtCalendar'
 import { useCourt } from '@/features/courts/hooks'
+import { courtSportLabels } from '@/features/courts/types'
 import { useOperatingHours } from '@/features/schedule/hooks'
 import { useCreateReservation } from '@/features/reservations/hooks'
 import { getMatchIdForReservation } from '@/features/reservations/api'
@@ -64,7 +65,7 @@ export function BookCourtPage() {
       <div>
         <h1 className="text-xl font-bold">{court?.name}</h1>
         <p className="text-sm text-muted-foreground">
-          {court?.complexes?.name} · {court?.sports?.label}
+          {court?.complexes?.name} · {court && courtSportLabels(court)}
         </p>
         {court?.price_per_hour != null && (
           <p className="mt-1 text-sm">

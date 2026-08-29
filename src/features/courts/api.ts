@@ -4,9 +4,9 @@ import type { CourtInsert, CourtUpdate } from '@/features/courts/types'
 export async function listCourtsByComplexAndSport(complexId: string, sportId: string) {
   const { data, error } = await supabase
     .from('courts')
-    .select('*')
+    .select('*, court_sports!inner(sport_id, sports(id, key, label))')
     .eq('complex_id', complexId)
-    .eq('sport_id', sportId)
+    .eq('court_sports.sport_id', sportId)
     .order('created_at', { ascending: true })
   if (error) throw error
   return data
@@ -15,7 +15,7 @@ export async function listCourtsByComplexAndSport(complexId: string, sportId: st
 export async function listAllCourtsByComplex(complexId: string) {
   const { data, error } = await supabase
     .from('courts')
-    .select('*, sports(key, label)')
+    .select('*, court_sports(sport_id, sports(id, key, label))')
     .eq('complex_id', complexId)
     .order('created_at', { ascending: true })
   if (error) throw error
@@ -25,7 +25,7 @@ export async function listAllCourtsByComplex(complexId: string) {
 export async function listActiveCourtsForComplex(complexId: string) {
   const { data, error } = await supabase
     .from('courts')
-    .select('*, sports(key, label)')
+    .select('*, court_sports(sport_id, sports(id, key, label))')
     .eq('complex_id', complexId)
     .eq('is_active', true)
     .order('created_at', { ascending: true })
@@ -36,7 +36,7 @@ export async function listActiveCourtsForComplex(complexId: string) {
 export async function getCourt(id: string) {
   const { data, error } = await supabase
     .from('courts')
-    .select('*, sports(key, label), complexes(name)')
+    .select('*, court_sports(sport_id, sports(id, key, label)), complexes(name)')
     .eq('id', id)
     .single()
   if (error) throw error
@@ -62,5 +62,27 @@ export async function updateCourt(id: string, patch: CourtUpdate) {
 
 export async function deleteCourt(id: string) {
   const { error } = await supabase.from('courts').delete().eq('id', id)
+  if (error) throw error
+}
+
+export async function addSportToCourt(courtId: string, sportId: string) {
+  const { error } = await supabase
+    .from('court_sports')
+    .insert({ court_id: courtId, sport_id: sportId })
+  if (error) throw error
+}
+
+// No deja sacar el deporte "principal" (courts.sport_id): esa cancha
+// siempre necesita al menos ese, sacar todos los tags la dejaría sin
+// ningún deporte asociado. Solo se pueden quitar los deportes extra.
+export async function removeSportFromCourt(courtId: string, sportId: string, primarySportId: string) {
+  if (sportId === primarySportId) {
+    throw new Error('No podés quitar el deporte principal de la cancha.')
+  }
+  const { error } = await supabase
+    .from('court_sports')
+    .delete()
+    .eq('court_id', courtId)
+    .eq('sport_id', sportId)
   if (error) throw error
 }
