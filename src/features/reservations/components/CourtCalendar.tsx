@@ -12,12 +12,16 @@ export function CourtCalendar({
   operatingHours,
   selected,
   onSelect,
+  disableOccupied = true,
 }: {
   courtId: string
   weekStart: Date
   operatingHours: OperatingHour[] | undefined
   selected: SelectedSlot | null
   onSelect: (slot: SelectedSlot) => void
+  /** En el panel de admin queremos poder tocar un slot ocupado para ver/cancelar
+   * esa reserva, no solo los libres (que es lo único útil del lado cliente). */
+  disableOccupied?: boolean
 }) {
   const days = Array.from({ length: 7 }, (_, i) => {
     const d = new Date(weekStart)
@@ -99,13 +103,13 @@ export function CourtCalendar({
                     <td key={dayKey}>
                       <button
                         type="button"
-                        disabled={isOccupied}
+                        disabled={isOccupied && disableOccupied}
                         onClick={() => onSelect({ date: dayKey, time: timeStr })}
                         className={`h-7 w-full rounded-md border text-[10px] font-medium ${
-                          isOccupied
-                            ? 'cursor-not-allowed border-border bg-muted text-muted-foreground'
-                            : isSelected
-                              ? 'border-primary bg-primary text-primary-foreground'
+                          isSelected
+                            ? 'border-primary bg-primary text-primary-foreground'
+                            : isOccupied
+                              ? `border-border bg-muted text-muted-foreground ${disableOccupied ? 'cursor-not-allowed' : 'hover:border-primary/50'}`
                               : 'border-border bg-card text-foreground hover:border-primary/50'
                         }`}
                       >
