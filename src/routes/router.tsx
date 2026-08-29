@@ -15,6 +15,7 @@ import { MyReservationsPage } from '@/routes/client/MyReservationsPage'
 import { ProfilePage } from '@/routes/client/ProfilePage'
 import { AdminLayout } from '@/routes/admin/AdminLayout'
 import { AdminHomePage } from '@/routes/admin/AdminHomePage'
+import { DashboardPage as AdminDashboardPage } from '@/routes/admin/DashboardPage'
 import { CourtsPage } from '@/routes/admin/CourtsPage'
 import { SchedulePage } from '@/routes/admin/SchedulePage'
 import { ReservationsPage } from '@/routes/admin/ReservationsPage'
@@ -62,6 +63,7 @@ export const router = createBrowserRouter([
         element: <AdminLayout />,
         children: [
           { index: true, element: <AdminHomePage /> },
+          { path: ':complexId', element: <AdminDashboardPage /> },
           { path: ':complexId/courts', element: <CourtsPage /> },
           { path: ':complexId/schedule', element: <SchedulePage /> },
           { path: ':complexId/reservations', element: <ReservationsPage /> },

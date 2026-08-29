@@ -63,7 +63,7 @@ export function RegisterComplexPage() {
       {
         onSuccess: async (complexId) => {
           await refreshProfile()
-          navigate(`/admin/${complexId}/courts`)
+          navigate(`/admin/${complexId}`)
         },
         onError: (err) => {
           setSubmitting(false)

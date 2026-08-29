@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 import { Card, CardContent } from '@/components/ui/card'
 import { useAuth } from '@/context/AuthProvider'
 import { useComplexes, useMyManagedComplexes } from '@/features/complexes/hooks'
@@ -10,6 +10,12 @@ export function AdminHomePage() {
   const myComplexes = useMyManagedComplexes()
 
   const { data: complexes, isLoading } = isSuperAdmin ? allComplexes : myComplexes
+
+  // Con un solo complejo (el caso más común) salteamos el selector y vamos
+  // directo al dashboard, en vez de mostrar una lista de una sola tarjeta.
+  if (!isSuperAdmin && complexes && complexes.length === 1) {
+    return <Navigate to={`/admin/${complexes[0].id}`} replace />
+  }
 
   return (
     <div className="flex flex-col gap-4 p-4">
@@ -25,7 +31,7 @@ export function AdminHomePage() {
 
       <div className="flex flex-col gap-3">
         {complexes?.map((complex) => (
-          <Link key={complex.id} to={`/admin/${complex.id}/courts`}>
+          <Link key={complex.id} to={`/admin/${complex.id}`}>
             <Card>
               <CardContent className="p-4">
                 <p className="font-semibold">{complex.name}</p>
